@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 import 'package:cellmonitor/main.dart';
-import 'package:cellmonitor/state/simulation_state.dart';
+import 'package:cellmonitor/providers/simulation_provider.dart';
 
 void main() {
   testWidgets('Fleet dashboard loads reactor cards', (WidgetTester tester) async {
@@ -14,7 +14,7 @@ void main() {
 
     await tester.pumpWidget(
       ChangeNotifierProvider(
-        create: (_) => SimulationState(),
+        create: (_) => SimulationProvider(),
         child: const CellMonitorApp(),
       ),
     );

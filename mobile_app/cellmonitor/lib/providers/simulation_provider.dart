@@ -70,8 +70,8 @@ class ReactorSimulation {
   }
 }
 
-class SimulationState extends ChangeNotifier {
-  SimulationState() {
+class SimulationProvider extends ChangeNotifier {
+  SimulationProvider() {
     _reactors = [
       ReactorSimulation(
         id: 'alpha',
@@ -106,6 +106,8 @@ class SimulationState extends ChangeNotifier {
 
   static const _currentUrl = 'http://10.0.2.2:8000/predict_current';
   static const _forecastUrl = 'http://10.0.2.2:8000/predict_forecast';
+  static const _autoPilotAlertMessage =
+      '🤖 AI Müdahalesi: Laktat tehlikeli seviyeye ulaştı ve temizlendi!';
 
   final Random _rng = Random();
   late final List<ReactorSimulation> _reactors;
@@ -163,9 +165,9 @@ class SimulationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleAutoPilot(String id) {
+  void toggleAutoPilot(String id, bool enabled) {
     final reactor = getReactor(id);
-    reactor.isAutoPilotEnabled = !reactor.isAutoPilotEnabled;
+    reactor.isAutoPilotEnabled = enabled;
     notifyListeners();
   }
 
@@ -284,15 +286,22 @@ class SimulationState extends ChangeNotifier {
     }
   }
 
-  Future<void> _fetchPredictions(ReactorSimulation reactor) async {
+  Future<void> _fetchPredictions(
+    ReactorSimulation reactor, {
+    bool runAutoPilot = true,
+  }) async {
     reactor.isLoading = true;
     await _fetchCurrent(reactor);
+
     if (reactor.apiHistoryBuffer.length >= forecastHistoryMax) {
       await _fetchForecast(reactor);
-      await _runAutoPilot(reactor);
     } else {
       reactor.forecastViability = null;
       reactor.forecastMessage = 'Veri Toplanıyor...';
+    }
+
+    if (runAutoPilot) {
+      await _runAutoPilot(reactor);
     }
     reactor.isLoading = false;
   }
@@ -356,27 +365,19 @@ class SimulationState extends ChangeNotifier {
 
   Future<void> _runAutoPilot(ReactorSimulation reactor) async {
     if (!reactor.isAutoPilotEnabled) return;
+
+    final current = reactor.currentViability;
     final forecast = reactor.forecastViability;
-    if (forecast == null || forecast >= 80) return;
+    final isLowViability = (current != null && current < 80) ||
+        (forecast != null && forecast < 80);
+    if (!isLowViability) return;
 
-    String? action;
+    reactor.lactate = 0.0;
+    reactor.glucose = (reactor.glucose + 5.0).clamp(0.0, 15.0);
+    reactor.pendingAutoPilotAlert = _autoPilotAlertMessage;
 
-    if (reactor.lactate > 2.5) {
-      reactor.lactate = 0.0;
-      action = 'Laktat temizlendi!';
-    } else if (reactor.oxygen < 45) {
-      reactor.oxygen = 60.0;
-      action = 'O2 basıldı!';
-    } else if (reactor.glucose < 4.0) {
-      reactor.glucose = (reactor.glucose + 5.0).clamp(0.0, 15.0);
-      action = 'Glikoz eklendi!';
-    }
-
-    if (action == null) return;
-
-    reactor.pendingAutoPilotAlert = '🤖 AI Müdahalesi: $action';
     _updateChartHistories(reactor);
     _recordSnapshot(reactor);
-    await _fetchPredictions(reactor);
+    await _fetchPredictions(reactor, runAutoPilot: false);
   }
 }

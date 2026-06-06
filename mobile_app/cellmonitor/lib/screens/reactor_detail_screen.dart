@@ -6,7 +6,7 @@ import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../state/simulation_state.dart';
+import '../providers/simulation_provider.dart';
 import '../theme/app_theme.dart';
 
 class ReactorDetailScreen extends StatefulWidget {
@@ -22,29 +22,29 @@ class ReactorDetailScreen extends StatefulWidget {
 }
 
 class _ReactorDetailScreenState extends State<ReactorDetailScreen> {
-  SimulationState? _state;
+  SimulationProvider? _provider;
   String? _lastShownAlert;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final state = context.read<SimulationState>();
-    if (_state != state) {
-      _state?.removeListener(_onSimulationChanged);
-      _state = state;
-      _state!.addListener(_onSimulationChanged);
+    final provider = context.read<SimulationProvider>();
+    if (_provider != provider) {
+      _provider?.removeListener(_onSimulationChanged);
+      _provider = provider;
+      _provider!.addListener(_onSimulationChanged);
     }
   }
 
   @override
   void dispose() {
-    _state?.removeListener(_onSimulationChanged);
+    _provider?.removeListener(_onSimulationChanged);
     super.dispose();
   }
 
   void _onSimulationChanged() {
-    if (!mounted || _state == null) return;
-    final reactor = _state!.getReactor(widget.reactorId);
+    if (!mounted || _provider == null) return;
+    final reactor = _provider!.getReactor(widget.reactorId);
     final alert = reactor.pendingAutoPilotAlert;
     if (alert == null || alert == _lastShownAlert) return;
 
@@ -56,7 +56,7 @@ class _ReactorDetailScreenState extends State<ReactorDetailScreen> {
         behavior: SnackBarBehavior.floating,
       ),
     );
-    _state!.clearAutoPilotAlert(widget.reactorId);
+    _provider!.clearAutoPilotAlert(widget.reactorId);
     _lastShownAlert = null;
   }
 
@@ -117,7 +117,7 @@ class _ReactorDetailScreenState extends State<ReactorDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<SimulationState>();
+    final state = context.watch<SimulationProvider>();
     final reactor = state.getReactor(widget.reactorId);
     final collecting = reactor.apiHistoryBuffer.length < forecastHistoryMax;
 
@@ -134,8 +134,9 @@ class _ReactorDetailScreenState extends State<ReactorDetailScreen> {
         actions: [
           _AutoPilotSwitch(
             enabled: reactor.isAutoPilotEnabled,
-            onChanged: (_) =>
-                context.read<SimulationState>().toggleAutoPilot(widget.reactorId),
+            onChanged: (value) => context
+                .read<SimulationProvider>()
+                .toggleAutoPilot(widget.reactorId, value),
           ),
           IconButton(
             icon: const Icon(Icons.download, color: Color(0xFF00E676)),
@@ -511,40 +512,42 @@ class _AutoPilotSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(right: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        color: neonGreen.withValues(alpha: enabled ? 0.12 : 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: neonGreen.withValues(alpha: enabled ? 0.45 : 0.2),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.smart_toy_outlined,
-            size: 16,
-            color: enabled ? neonGreen : Colors.white54,
+    return Tooltip(
+      message: 'Otonom Kontrol (AI)',
+      child: Container(
+        margin: const EdgeInsets.only(right: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: neonGreen.withValues(alpha: enabled ? 0.12 : 0.05),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: neonGreen.withValues(alpha: enabled ? 0.45 : 0.2),
           ),
-          const SizedBox(width: 4),
-          Text(
-            'AI',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.smart_toy_outlined,
+              size: 16,
               color: enabled ? neonGreen : Colors.white54,
             ),
-          ),
-          Switch(
-            value: enabled,
-            onChanged: onChanged,
-            activeColor: neonGreen,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-        ],
+            const SizedBox(width: 4),
+            Text(
+              'Otonom',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: enabled ? neonGreen : Colors.white54,
+              ),
+            ),
+            Switch(
+              value: enabled,
+              onChanged: onChanged,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ],
+        ),
       ),
     );
   }

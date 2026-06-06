@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'providers/simulation_provider.dart';
 import 'screens/fleet_dashboard_screen.dart';
-import 'state/simulation_state.dart';
 import 'theme/app_theme.dart';
 
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => SimulationState(),
+      create: (_) => SimulationProvider(),
       child: const CellMonitorApp(),
     ),
   );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../state/simulation_state.dart';
+import '../providers/simulation_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/dashboard_widgets.dart';
 import 'reactor_detail_screen.dart';
@@ -39,7 +39,7 @@ class _FleetDashboardScreenState extends State<FleetDashboardScreen>
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<SimulationState>();
+    final state = context.watch<SimulationProvider>();
     final reactors = state.reactors;
     final averageHealth = state.averageSystemHealth;
 
@@ -63,7 +63,8 @@ class _FleetDashboardScreenState extends State<FleetDashboardScreen>
             icon: Icons.refresh_rounded,
             accent: neonGreen,
             tooltip: 'Tümünü Yenile',
-            onTap: () => context.read<SimulationState>().refreshAll(force: true),
+            onTap: () =>
+                context.read<SimulationProvider>().refreshAll(force: true),
           ),
           const SizedBox(width: 12),
         ],
