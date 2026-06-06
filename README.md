@@ -81,5 +81,10 @@ PDF Raporlama: Sağ üstteki indirme butonuna tıklayarak o anki sensör değerl
 Bu proje, Veri Bilimi modellerinin uçtan uca bir mobil IoT platformuna nasıl entegre edilebileceğini göstermek amacıyla geliştirilmiştir.
 
 uygulamadan bazı görseller:
+
+
+
+
+
 <img width="379" height="811" alt="Ekran görüntüsü 2026-06-06 232124" src="https://github.com/user-attachments/assets/fcd31c69-ee1e-451b-afb0-38f250edc3f0" />
 <img width="376" height="791" alt="Ekran görüntüsü 2026-06-06 232113" src="https://github.com/user-attachments/assets/e52713c7-f098-4378-a9e9-2f96255f34e4" />
