@@ -1,82 +1,152 @@
-🔬 CellMonitor AI: Predictive Bioreactor Platform (V2.0)
+<div align="center">
 
-Endüstri 4.0 standartlarında, biyoreaktör hücre kültürlerini gerçek zamanlı izleyen ve Hibrit Yapay Zeka (XGBoost + LSTM) ile hücre canlılığını tahmin edip, Otonom (Auto-Pilot) olarak sisteme müdahale edebilen IoT platformu.
+# CellMonitor AI
 
-🚀 Proje Vizyonu ve V2.0 Güncellemeleri
+### Sentetik biyoreaktör sensör verileriyle çalışan yapay zekâ destekli izleme ve kontrol simülasyonu
 
-Bu proje, sensör verilerindeki anlık gürültüleri filtreleyerek "Şu an ne oluyor?" sorusunu XGBoost ile yanıtlarken, "5 Dakika sonra ne olacak?" sorusunu Zaman Serisi (LSTM) modeliyle öngörür.
+Türkçe · [English](README.en.md)
 
-🌟 V2.0 Yenilikleri:
+![Flutter](https://img.shields.io/badge/Flutter-Mobile-02569B?logo=flutter&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)
+![XGBoost](https://img.shields.io/badge/XGBoost-Current%20Prediction-FF6600)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-LSTM-FF6F00?logo=tensorflow&logoColor=white)
 
-Tam Senkronizasyon (State Management): Uygulama Provider mimarisine geçirilerek "Filo Dashboard" ile "Detay Ekranı" arasında milisaniyelik veri senkronizasyonu sağlandı.
+</div>
 
-Auto-Pilot (Otonom Müdahale): Operatör yorgunluğunu sıfıra indiren AI Kontrol modülü eklendi. LSTM modeli 5 dakika içinde %80'in altında kritik bir düşüş öngörürse, sistem operatöre sormadan laktat temizleme gibi hayati valfleri otomatik tetikler.
+---
 
-🧠 Mimari ve Kullanılan Teknolojiler
+## Proje Özeti
 
-1. Yapay Zeka ve Veri Bilimi
+CellMonitor AI, biyoreaktör hücre kültürü süreçlerini temsil eden **sentetik sensör verilerini** izleyen ve iki farklı yapay zekâ modeliyle hücre canlılığı tahmini üreten bir mobil kontrol paneli prototipidir.
 
-XGBoost (Anlık Durum): Sensör değerlerine bakarak hücre canlılığını anlık tahmin eder.
+Proje gerçek bir endüstriyel biyoreaktöre bağlı değildir. Amaç; yapay zekâ modellerinin, REST API'nin, mobil görselleştirmenin ve kontrol senaryolarının tek bir uçtan uca prototipte nasıl birleştirilebileceğini göstermektir.
 
-LSTM (Gelecek Öngörüsü): Son 40 saniyelik sensör trendlerini analiz ederek 5 dakika sonraki hücre sağlığını tahmin eder.
+---
 
-Stateless Calibration Layer: Sensörlerdeki anormalliklerde yapay zekanın paniklemesini engelleyen biyolojik kurallar tabanlı kalibrasyon katmanı.
+## Temel Özellikler
 
-2. Backend (FastAPI)
+- Dört reaktörü aynı anda gösteren filo paneli
+- pH, sıcaklık, çözünmüş oksijen, glikoz, laktat ve karıştırma hızı simülasyonu
+- XGBoost ile anlık canlılık tahmini
+- LSTM ile zaman serisi tabanlı ileriye dönük tahmin
+- Reaktör detay ekranı ve canlı grafikler
+- Manuel müdahale senaryoları
+- Otonom kontrol davranışını temsil eden Auto-Pilot simülasyonu
+- Flutter Provider tabanlı durum yönetimi
+- FastAPI üzerinden tahmin endpoint'leri
 
-Yapay zeka modelleri (TensorFlow ve joblib) FastAPI üzerinden RESTful servislere dönüştürüldü (/predict_current ve /predict_forecast).
+---
 
-3. Frontend (Flutter)
+## Uygulama Görünümü
 
-Fleet Dashboard: Aynı anda 4 farklı reaktörü izleyebilen merkezi kontrol odası.
+<div align="center">
 
-Detay Ekranı ve Otonom Kontrol: Canlı grafikler, yapay zeka göstergeleri ve yapay zekanın yetkilerini açıp kapatabildiğiniz Auto-Pilot anahtarı.
+<img src="https://github.com/user-attachments/assets/fcd31c69-ee1e-451b-afb0-38f250edc3f0" width="360" alt="CellMonitor AI dashboard">
 
-Glassmorphism UI: Fütüristik, karanlık tema tabanlı akışkan tasarım.
+<img src="https://github.com/user-attachments/assets/e52713c7-f098-4378-a9e9-2f96255f34e4" width="360" alt="CellMonitor AI reactor detail">
 
-🛠️ Kurulum ve Çalıştırma (Local Environment)
+</div>
 
-Projeyi kendi bilgisayarınızda denemek için:
+---
 
-Bölüm 1: Backend
+## Mimari
 
-Repoyu klonlayın ve backend klasörüne girin.
+```mermaid
+flowchart LR
+    A[Flutter Mobil Uygulama] --> B[Simüle Sensör Verileri]
+    B --> C[FastAPI Backend]
+    C --> D[XGBoost]
+    C --> E[LSTM]
+    D --> F[Anlık Canlılık Tahmini]
+    E --> G[İleriye Dönük Tahmin]
+    F --> H[Dashboard ve Müdahale Paneli]
+    G --> H
+```
 
-Gerekli kütüphaneleri yükleyin:
+---
 
+## Teknoloji Yığını
+
+### Mobil Uygulama
+
+- Flutter
+- Dart
+- Provider
+- HTTP
+- Canlı grafik ve dashboard bileşenleri
+
+### Backend ve Yapay Zekâ
+
+- Python
+- FastAPI
+- XGBoost
+- TensorFlow / Keras
+- LSTM
+- Pandas
+- NumPy
+- scikit-learn
+- joblib
+
+---
+
+## API Endpoint'leri
+
+```text
+POST /predict_current
+POST /predict_forecast
+```
+
+- `/predict_current`: Sensör değerlerinden anlık canlılık tahmini üretir.
+- `/predict_forecast`: Kısa zaman serisi geçmişinden ileriye dönük canlılık tahmini üretir.
+
+---
+
+## Çalıştırma
+
+### Backend
+
+```bash
+cd backend
 pip install -r requirements.txt
-
-
-API Sunucusunu başlatın:
-
 python -m uvicorn main:app --reload
+```
 
+### Flutter
 
-Bölüm 2: Frontend (Flutter)
-
-mobile_app klasörüne gidin.
-
-Paketleri çekin:
-
+```bash
+cd mobile_app/cellmonitor
 flutter pub get
-
-
-Uygulamayı başlatın:
-
 flutter run
+```
 
+Android emülatörü için API adresi:
 
-💡 Senaryolar ve Kullanım
+```text
+http://10.0.2.2:8000
+```
 
-Manuel Müdahale: Simülasyon sırasında değerler kötüleştiğinde müdahale paneliyle değerleri elle düzenleyebilirsiniz.
+---
 
-Auto-Pilot Şovu: Detay ekranında sağ üstteki "Otonom AI" şalterini açın. Yapay zeka %80 altına bir düşüş öngördüğü an ekranda beliren yeşil bildirimle birlikte sistemi nasıl otomatik kurtardığını izleyin!
+## Simülasyon Senaryoları
 
-uygulamadan bazı görseller:
+- **Normal çalışma:** Stabil sensör değerleri ve yüksek canlılık
+- **Uyarı durumu:** pH, sıcaklık veya oksijen değerlerinde bozulma
+- **Kritik durum:** Düşük canlılık tahmini ve müdahale gereksinimi
+- **Manuel müdahale:** Glikoz ekleme, laktat temizleme veya oksijen artırma
+- **Auto-Pilot simülasyonu:** Belirlenen eşiklerde otomatik iyileştirme davranışı
 
+---
 
+## Sınırlılıklar
 
+- Sensör verileri sentetiktir.
+- Proje gerçek bir biyoreaktör, valf veya endüstriyel IoT sistemiyle entegre değildir.
+- Auto-Pilot bölümü fiziksel müdahale değil, uygulama içi kontrol simülasyonudur.
+- Model çıktıları laboratuvar veya üretim ortamında doğrulanmamıştır.
+- Proje eğitim, prototipleme ve portföy amacıyla geliştirilmiştir.
 
+---
 
-<img width="379" height="811" alt="Ekran görüntüsü 2026-06-06 232124" src="https://github.com/user-attachments/assets/fcd31c69-ee1e-451b-afb0-38f250edc3f0" />
-<img width="376" height="791" alt="Ekran görüntüsü 2026-06-06 232113" src="https://github.com/user-attachments/assets/e52713c7-f098-4378-a9e9-2f96255f34e4" />
+## Amaç
+
+CellMonitor AI; veri simülasyonu, makine öğrenmesi, zaman serisi tahmini, REST API ve mobil dashboard geliştirme becerilerini tek bir projede birleştiren uçtan uca bir yapay zekâ prototipidir.
